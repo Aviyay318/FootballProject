@@ -96,12 +96,8 @@ public class LeagueManager {
 //1
    private List<Match> findMatchesByTeam(int teamId){
        return this.matches.stream().filter(match -> match.isSameTeamById(teamId)&&match.getGoals().size()!=0).toList();
-   }//TO CHECK!!
-
-
+   }
 // 2
-
-
     public List<Team> findTopScoringTeams(int n) {
         return teams.stream()
                 .collect(Collectors.toMap(team -> team, team -> matches.stream()
