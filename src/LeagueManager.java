@@ -39,7 +39,6 @@ public class LeagueManager {
                outcome();
             }
         });
-        System.out.println(this.leagueTable);
     }
 
     private void updateLeagueTable(Match match, Map<Team, Integer> teamGoals) {
@@ -96,7 +95,7 @@ public class LeagueManager {
 
 //1
    private List<Match> findMatchesByTeam(int teamId){
-       return this.matches.stream().filter(match -> match.isSameTeamById(teamId)).toList();
+       return this.matches.stream().filter(match -> match.isSameTeamById(teamId)&&match.getGoals().size()!=0).toList();
    }//TO CHECK!!
 
 
