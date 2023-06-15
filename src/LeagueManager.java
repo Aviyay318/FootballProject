@@ -26,7 +26,7 @@ public class LeagueManager {
     public void startGame(){
         IntStream.range(0,45).forEach(i->{
             System.out.println(this.matches.get(i).getAwayTeam().getName()+"-------VS-------"+this.matches.get(i).getHomeTeam().getName());
-            //  countDown();
+              countDown();
                 this.matches.get(i).creatGoals();
             Map<Team,Integer> teamGoals = printResult( this.matches.get(i));
             updateLeagueTable(this.matches.get(i),teamGoals);
@@ -99,17 +99,7 @@ public class LeagueManager {
    }
 // 2
     public List<Team> findTopScoringTeams(int n) {
-        return teams.stream()
-                .collect(Collectors.toMap(team -> team, team -> matches.stream()
-                        .flatMap(match -> match.getGoals().stream())
-                        .map(Goal::getScorer)
-                        .filter(team.getPlayers()::contains)
-                        .count()))
-                .entrySet().stream()
-                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                .limit(n)
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toList());
+        return this.leagueTable.keySet().stream().limit(n).toList();
     }
     //3
     public List<Player> findPlayersWithAtLeastNGoals(int n) {
@@ -123,7 +113,7 @@ public class LeagueManager {
     }
     //5
     public Map<Integer, Integer> getTopScorers(int n) {
-        Map<Integer, Long> playerGoals = matches.stream()
+        Map<Integer, Long> playerGoals = this.matches.stream()
                 .flatMap(match -> match.getGoals().stream())
                 .map(Goal::getScorer)
                 .collect(Collectors.groupingBy(Player::getId, Collectors.counting()));

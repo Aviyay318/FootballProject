@@ -35,7 +35,7 @@ public class Goal {
         return "Goal{" +
                 "id=" + id +
                 ", minute=" + minute + ":90"+
-                 "scorer name: " +this.scorer.getId()+
+                 "scorer name: " +this.scorer.getName()+
                 '}';
     }
 }

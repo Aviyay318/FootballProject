@@ -59,10 +59,6 @@ public class Match {
         return isSameTeam;
     }
 
-    public int getId() {
-        return id;
-    }
-
     public String toString() {
         return "Match{ " +
                 " id=" + id +
