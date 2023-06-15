@@ -23,63 +23,63 @@ public class LeagueManager {
     }
 
 
-    public void startGame(){
-        IntStream.range(0,45).forEach(i->{
-            System.out.println(this.matches.get(i).getAwayTeam().getName()+"-------VS-------"+this.matches.get(i).getHomeTeam().getName());
-              countDown();
-                this.matches.get(i).creatGoals();
-            Map<Team,Integer> teamGoals = printResult( this.matches.get(i));
-            updateLeagueTable(this.matches.get(i),teamGoals);
-            this.leagueTable.forEach((team,score)->{
-                System.out.println(team + ": " + score);
+    public void startGame() {
+        IntStream.range(0, 45)
+                .forEach(i -> {
+                    Match match = this.matches.get(i);
+                    System.out.println(match.getHomeTeam().getName() + "-------VS-------" + match.getAwayTeam().getName());
+                    countDown();
+                    match.creatGoals();
+                    Map<Team, Integer> teamGoals = printResult(match);
+                    updateLeagueTable(match, teamGoals);
+                    this.leagueTable.forEach((team, score) -> System.out.println(team + ": " + score));
 
-            });
-                if ((i%5==0&&i!=0)||i==44){
-                    System.out.println(Constants.MENU);
-               outcome();
-            }
-        });
+                    if ((i % 5 == 0 && i != 0) || i == 44) {
+                        System.out.println(Constants.MENU);
+                        outcome();
+                    }
+                });
     }
 
+
     private void updateLeagueTable(Match match, Map<Team, Integer> teamGoals) {
-        if (teamGoals.get(match.getHomeTeam())>teamGoals.get(match.getAwayTeam())){
-            int temp = this.leagueTable.get(match.getHomeTeam())+3;
-            this.leagueTable.put(match.getHomeTeam(),temp);
-        } else if (teamGoals.get(match.getHomeTeam())<teamGoals.get(match.getAwayTeam())) {
-            int temp = this.leagueTable.get(match.getAwayTeam())+3;
-            this.leagueTable.put(match.getAwayTeam(),temp);
-        }else {
-            int temp = this.leagueTable.get(match.getHomeTeam())+1;
-            this.leagueTable.put(match.getHomeTeam(),temp);
-             temp = this.leagueTable.get(match.getAwayTeam())+1;
-            this.leagueTable.put(match.getAwayTeam(),temp);
-        }
+        Team homeTeam = match.getHomeTeam();
+        Team awayTeam = match.getAwayTeam();
+
+        int homeGoals = teamGoals.get(homeTeam);
+        int awayGoals = teamGoals.get(awayTeam);
+
+        int homePoints = (homeGoals > awayGoals) ? 3 : (homeGoals < awayGoals) ? 0 : 1;
+        int awayPoints = (awayGoals > homeGoals) ? 3 : (awayGoals < homeGoals) ? 0 : 1;
+
+        this.leagueTable.merge(homeTeam, homePoints, Integer::sum);
+        this.leagueTable.merge(awayTeam, awayPoints, Integer::sum);
+
         this.leagueTable = this.leagueTable.entrySet()
                 .stream()
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
-
-
     }
 
-    private Map<Team,Integer> printResult(Match match){
-    Map<Player,Long> playersGoals = match.getGoals().stream().collect(Collectors.groupingBy(Goal::getScorer,counting()));
-    Map<Team,Integer> teamGoals = new HashMap<>();
-    teamGoals.put(match.getHomeTeam(),0);
-    teamGoals.put(match.getAwayTeam(),0);
-    playersGoals.forEach((player,goals)->{
-        this.teams.forEach(j->{
-         if (j.getPlayers().contains(player)) {
-             Integer temp = teamGoals.get(j);
-                 teamGoals.put(j,temp+goals.intValue());
 
-         }
-        });
-    });
-    System.out.println("Result");
-    System.out.println(teamGoals.get(match.getHomeTeam())+":"+teamGoals.get(match.getAwayTeam()));
-    return teamGoals;
-}
+    private Map<Team, Integer> printResult(Match match) {
+        Map<Player, Long> playersGoals = match.getGoals().stream()
+                .collect(Collectors.groupingBy(Goal::getScorer, Collectors.counting()));
+
+        Map<Team, Integer> teamGoals = this.teams.stream()
+                .collect(Collectors.toMap(team -> team, team -> 0));
+
+        playersGoals.forEach((player, goals) ->
+                this.teams.stream()
+                        .filter(team -> team.getPlayers().contains(player))
+                        .forEach(team -> teamGoals.merge(team, goals.intValue(), Integer::sum)));
+
+        System.out.println("Result");
+        System.out.println(teamGoals.get(match.getHomeTeam()) + ":" + teamGoals.get(match.getAwayTeam()));
+
+        return teamGoals;
+    }
+
 
 
 
@@ -117,7 +117,6 @@ public class LeagueManager {
                 .flatMap(match -> match.getGoals().stream())
                 .map(Goal::getScorer)
                 .collect(Collectors.groupingBy(Player::getId, Collectors.counting()));
-
         return playerGoals.entrySet().stream()
                 .sorted(Map.Entry.<Integer, Long>comparingByValue().reversed())
                 .limit(n)
@@ -143,39 +142,48 @@ public class LeagueManager {
     }
     public void outcome() {
         Scanner scanner = new Scanner(System.in);
-        int userChoice;
-        boolean endMenu =false;
-        while (!endMenu){
-            switch (Utils.getInputInRange(scanner,1,6)){
-                case 1->{
-                    System.out.println("enter an id of team you want");
-                    userChoice = scanner.nextInt();
-                    System.out.println(findMatchesByTeam(userChoice));
+        boolean endMenu = false;
+
+        while (!endMenu) {
+            int userChoice = Utils.getInputInRange(scanner, 1, 6);
+
+            switch (userChoice) {
+                case 1 -> {
+                    System.out.println("Enter the ID of the team you want:");
+                    System.out.println(findMatchesByTeam(getUserChoice()));
                 }
-                case 2->{
-                    System.out.println("enter how much team you want: ");
-                    userChoice = scanner.nextInt();
-                    System.out.println(findTopScoringTeams(userChoice));
+                case 2 -> {
+                    System.out.println("Enter the number of top scoring teams you want:");
+                    System.out.println(findTopScoringTeams(getUserChoice()));
                 }
-                case 3->{
-                    System.out.println("enter how much goals you want: ");
-                    userChoice = scanner.nextInt();
-                    System.out.println(findPlayersWithAtLeastNGoals(userChoice));
+                case 3 -> {
+                    System.out.println("Enter the minimum number of goals you want:");
+                    System.out.println(findPlayersWithAtLeastNGoals(getUserChoice()));
                 }
-                case 4->{
-                    System.out.println("enter position of team you want: ");
-                    userChoice = scanner.nextInt();
-                    System.out.println(getTeamByPosition(userChoice));
+                case 4 -> {
+                    System.out.println("Enter the position of the team you want:");
+                    System.out.println(getTeamByPosition(getUserChoice()));
                 }
-                case 5->{
-                    System.out.println("enter position of scorers you want: ");
-                    userChoice = scanner.nextInt();
-                    System.out.println(getTopScorers(userChoice));
+                case 5 -> {
+                    System.out.println("Enter the position of the top scorers you want:");
+                    System.out.println(getTopScorers(getUserChoice()));
                 }
-                case 6->{
-                    endMenu=true;
+                case 6 -> {
+                    endMenu = true;
                 }
             }
         }
+    }
 
-}}
+    private int getUserChoice(){
+        Scanner scanner = new Scanner(System.in);
+        int userChoice =0;
+        try{
+             userChoice = scanner.nextInt();
+        }catch (Exception e){
+            System.out.println("INVALID INPUT");
+            getUserChoice();
+        }
+        return userChoice;
+    }
+}
