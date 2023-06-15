@@ -26,10 +26,14 @@ public class LeagueManager {
     public void startGame(){
         IntStream.range(0,45).forEach(i->{
             System.out.println(this.matches.get(i).getAwayTeam().getName()+"-------VS-------"+this.matches.get(i).getHomeTeam().getName());
-            countDown();
+            //  countDown();
                 this.matches.get(i).creatGoals();
             Map<Team,Integer> teamGoals = printResult( this.matches.get(i));
             updateLeagueTable(this.matches.get(i),teamGoals);
+            this.leagueTable.forEach((team,score)->{
+                System.out.println(team + ": " + score);
+
+            });
                 if ((i%5==0&&i!=0)||i==44){
                     System.out.println(Constants.MENU);
                outcome();
@@ -51,6 +55,12 @@ public class LeagueManager {
              temp = this.leagueTable.get(match.getAwayTeam())+1;
             this.leagueTable.put(match.getAwayTeam(),temp);
         }
+        this.leagueTable = this.leagueTable.entrySet()
+                .stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+
+
     }
 
     private Map<Team,Integer> printResult(Match match){
@@ -114,7 +124,7 @@ public class LeagueManager {
     }
     //4
     private Team getTeamByPosition(int position) {
-        return null;//TO DO //this.leagueTable.get(position);
+        return this.leagueTable.entrySet().stream().map(Map.Entry::getKey).toList().get(position-1);
     }
     //5
     public Map<Integer, Integer> getTopScorers(int n) {
