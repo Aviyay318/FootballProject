@@ -28,7 +28,7 @@ public class LeagueManager {
                 .forEach(i -> {
                     Match match = this.matches.get(i);
                     System.out.println(match.getHomeTeam().getName() + "-------VS-------" + match.getAwayTeam().getName());
-                    //countDown();
+                    countDown();
                     match.creatGoals();
                     Map<Team, Integer> teamGoals = printResult(match);
                     System.out.println("League Table:");
@@ -76,7 +76,7 @@ public class LeagueManager {
                         .filter(team -> team.getPlayers().contains(player))
                         .forEach(team -> teamGoals.merge(team, goals.intValue(), Integer::sum)));
 
-        System.out.println("Result");
+        System.out.println("Final score of a football match:");
         System.out.println(teamGoals.get(match.getHomeTeam()) + ":" + teamGoals.get(match.getAwayTeam()));
 
         return teamGoals;
@@ -97,6 +97,7 @@ public class LeagueManager {
 
 //1
    private List<Match> findMatchesByTeam(int teamId){
+       System.out.println("The matches the team played are");
        return this.matches.stream().filter(match -> match.isSameTeamById(teamId)&&match.isPlay()).toList();
    }
 // 2
