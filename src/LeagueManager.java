@@ -28,13 +28,15 @@ public class LeagueManager {
                 .forEach(i -> {
                     Match match = this.matches.get(i);
                     System.out.println(match.getHomeTeam().getName() + "-------VS-------" + match.getAwayTeam().getName());
-                    countDown();
+                    //countDown();
                     match.creatGoals();
                     Map<Team, Integer> teamGoals = printResult(match);
+                    System.out.println("League Table:");
                     updateLeagueTable(match, teamGoals);
                     this.leagueTable.forEach((team, score) -> System.out.println(team + ": " + score));
-
+                    match.playGame();
                     if ((i % 5 == 0 && i != 0) || i == 44) {
+                        System.out.println("Menu:");
                         System.out.println(Constants.MENU);
                         outcome();
                     }
@@ -95,7 +97,7 @@ public class LeagueManager {
 
 //1
    private List<Match> findMatchesByTeam(int teamId){
-       return this.matches.stream().filter(match -> match.isSameTeamById(teamId)&&match.getGoals().size()!=0).toList();
+       return this.matches.stream().filter(match -> match.isSameTeamById(teamId)&&match.isPlay()).toList();
    }
 // 2
     public List<Team> findTopScoringTeams(int n) {
@@ -177,12 +179,13 @@ public class LeagueManager {
 
     private int getUserChoice(){
         Scanner scanner = new Scanner(System.in);
-        int userChoice =0;
+        int userChoice;
         try{
              userChoice = scanner.nextInt();
         }catch (Exception e){
-            System.out.println("INVALID INPUT");
-            getUserChoice();
+            System.out.println("Invalid input. Please enter a valid number.");
+            scanner.nextLine(); // Consume the invalid input
+            return getUserChoice();
         }
         return userChoice;
     }

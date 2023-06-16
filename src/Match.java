@@ -9,6 +9,7 @@ public class Match {
     private Team homeTeam;
     private Team awayTeam;
     private List<Goal>goals;
+    private boolean isPlay;
     private static int counter=0;
 
     public Match(Team homeTeam, Team awayTeam) {
@@ -16,10 +17,19 @@ public class Match {
         this.homeTeam = homeTeam;
         this.awayTeam = awayTeam;
         this.goals = new ArrayList<>();
+        this.isPlay = false;
     }
     private void setMatchId() {
         counter++;
         this.id=counter;
+    }
+
+    public void playGame() {
+        isPlay = true;
+    }
+
+    public boolean isPlay() {
+        return isPlay;
     }
 
     public List<Goal> getGoals() {
