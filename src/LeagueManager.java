@@ -25,7 +25,6 @@ public class LeagueManager {
         this.matches=matches2;
     }
     this.matches = tempMatches;
-        System.out.println(this.matches);
         this.leagueTable = new HashMap<>();
         this.teams.forEach(i->{
             this.leagueTable.put(i,0);
