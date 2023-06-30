@@ -28,6 +28,7 @@ public class Match {
         isPlay = true;
     }
 
+
     public boolean isPlay() {
         return isPlay;
     }

@@ -14,12 +14,42 @@ public class LeagueManager {
     public LeagueManager() {
         this.teams = createTeam();
         this.matches = matchTeams();
+     //   System.out.println(this.matches);
+        List<Match> matches2 = this.matches;
+    List<Match> tempMatches = new ArrayList<>();
+    while (tempMatches.size()<45){
         Collections.shuffle(this.matches);
+        IntStream.range(0,9).forEach(i ->{
+            tempMatches.addAll(makeRoundsMatches());
+        });
+        this.matches=matches2;
+    }
+    this.matches = tempMatches;
+        System.out.println(this.matches);
         this.leagueTable = new HashMap<>();
         this.teams.forEach(i->{
             this.leagueTable.put(i,0);
         });
 
+    }
+
+    private  List<Match> makeRoundsMatches() {
+        List<Match> tempMatches = new ArrayList<>();
+        IntStream.range(0,5).forEach(i ->{
+            this.matches.stream().forEach(match -> {
+                if (!match.getHomeTeam().isPlay() && !match.getAwayTeam().isPlay()) {
+                    tempMatches.add(match);
+                    match.getHomeTeam().setPlay(true);
+                    match.getAwayTeam().setPlay(true);
+                }
+            });
+        });
+        tempMatches.stream().forEach(match -> {
+            match.getHomeTeam().setPlay(false);
+            match.getAwayTeam().setPlay(false);
+        });
+        this.matches.removeAll(tempMatches);
+        return tempMatches;
     }
 
 
@@ -185,7 +215,7 @@ public class LeagueManager {
              userChoice = scanner.nextInt();
         }catch (Exception e){
             System.out.println("Invalid input. Please enter a valid number.");
-            scanner.nextLine(); // Consume the invalid input
+            scanner.nextLine();
             return getUserChoice();
         }
         return userChoice;

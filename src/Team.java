@@ -5,6 +5,7 @@ public class Team {
     private int id;
     private String name;
     private List <Player> players;
+    private boolean isPlay;
 
     private int winningPoints;
 
@@ -14,7 +15,17 @@ public class Team {
       this.name = teamData[Constants.NAME_INDEX];
       this.players = createPlayers();
       this.winningPoints = 0;
+      this.isPlay = false;
     }
+
+    public void setPlay(boolean play) {
+        isPlay = play;
+    }
+
+    public boolean isPlay() {
+        return isPlay;
+    }
+
     public void addPoints(){
         this.winningPoints++;
     }
