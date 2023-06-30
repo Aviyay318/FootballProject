@@ -14,15 +14,14 @@ public class LeagueManager {
     public LeagueManager() {
         this.teams = createTeam();
         this.matches = matchTeams();
-     //   System.out.println(this.matches);
-        List<Match> matches2 = this.matches;
+        List<Match> originalMatches = this.matches;
     List<Match> tempMatches = new ArrayList<>();
     while (tempMatches.size()<45){
         Collections.shuffle(this.matches);
         IntStream.range(0,9).forEach(i ->{
             tempMatches.addAll(makeRoundsMatches());
         });
-        this.matches=matches2;
+        this.matches=originalMatches;
     }
     this.matches = tempMatches;
         this.leagueTable = new HashMap<>();
@@ -50,7 +49,6 @@ public class LeagueManager {
         this.matches.removeAll(tempMatches);
         return tempMatches;
     }
-
 
     public void startGame() {
         IntStream.range(0, 45)
